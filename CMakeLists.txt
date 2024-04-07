@@ -21,6 +21,7 @@ add_subdirectory(libs/libanvil anvil)
 include_directories(libs/libanvil/include)
 target_link_libraries(${PROJECT_NAME} libanvil)
 target_link_libraries(${PROJECT_NAME} z)
+target_link_libraries(${PROJECT_NAME} chrono)
 
 include_directories(libs/indicators/single_include)
 include_directories(libs/indicators/include)
