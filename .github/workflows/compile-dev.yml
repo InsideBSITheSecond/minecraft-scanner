@@ -25,7 +25,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         build_type: [Release]
-        c_compiler: [gcc-13, clang]
+        c_compiler: [clang]
         include:
           - os: ubuntu-latest
             c_compiler: clang
