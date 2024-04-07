@@ -1,6 +1,7 @@
 # Usage:
+download file from https://github.com/InsideBSITheSecond/minecraft-scanner/releases
 ```
-./build/bin/scanner
+./minecraft-scanner
 ```
 
 # Compile:
