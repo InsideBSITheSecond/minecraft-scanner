@@ -7,6 +7,8 @@
 
 #include "region_file_reader.h"
 
+#include <indicators/progress_bar.hpp>
+
 namespace emss {
 	enum REPORT_TYPE {
 		DEBUG,
@@ -14,10 +16,13 @@ namespace emss {
 	};
 
 	struct vec2{
-		vec2(int X, int Z) : x{X}, z{Z} {};
-
 		int x;
 		int z;
+	};
+
+	struct Progress{
+		indicators::ProgressBar *region;
+		indicators::ProgressBar *chunk;
 	};
 
 	class FoundBlock : public Block {
@@ -51,10 +56,11 @@ namespace emss {
 			
 			std::unordered_map<std::string, std::vector<FoundBlock *>> foundMap;
 
+			std::string worldPath_ = std::filesystem::current_path().string() + "/world";
+			Progress bars;
 		private:
 			region_file_reader reader_;
 			vec2 regioncrd_;
-			std::string worldPath_ = std::filesystem::current_path().string() + "/world";
 			std::vector<std::string> lookup_;
 	};
 }
