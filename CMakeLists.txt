@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.2)
 set(PROJECT_NAME EMSE)
 
 project(${PROJECT_NAME} VERSION 0.1.0 LANGUAGES C CXX)
