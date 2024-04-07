@@ -28,10 +28,6 @@ jobs:
         c_compiler: [gcc-13, clang]
         include:
           - os: ubuntu-latest
-            c_compiler: gcc-13
-            cpp_compiler: g++
-
-          - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: g++
 
