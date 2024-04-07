@@ -86,4 +86,5 @@ jobs:
         title: "Development Build"
         files: |
           build/bin/minecraft-scanner
+		  license
         
