@@ -39,8 +39,8 @@ int main() {
 		emss::Scanner *scanner = new emss::Scanner(glm::vec2(0, 0), lookupTable);
 
 		scanner->scanRegion();
-		scanner->writeReport();
-		
+		scanner->writeReport(emss::USERFRIENDLY);
+
 		std::cout << "end" << std::endl;
 
 	// catch all exception that may occur
