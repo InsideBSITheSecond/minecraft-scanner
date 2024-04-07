@@ -1,3 +1,6 @@
 [submodule "libs/libanvil"]
 	path = libs/libanvil
 	url = https://github.com/InsideBSITheSecond/libanvil.git
+[submodule "libs/indicators"]
+	path = libs/indicators
+	url = https://github.com/p-ranav/indicators.git

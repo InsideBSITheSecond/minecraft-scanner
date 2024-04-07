@@ -22,6 +22,9 @@ include_directories(libs/libanvil/include)
 target_link_libraries(${PROJECT_NAME} libanvil)
 target_link_libraries(${PROJECT_NAME} z)
 
+include_directories(libs/indicators/single_include)
+include_directories(libs/indicators/include)
+
 # Fake save
 #add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 #	COMMAND ${CMAKE_COMMAND} -E copy_directory

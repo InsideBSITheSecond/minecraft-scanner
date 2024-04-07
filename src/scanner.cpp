@@ -9,7 +9,14 @@ namespace emss {
 	void Scanner::scanRegion(){
 		for(unsigned int chunkX = 0; chunkX < 32; ++chunkX) {
 			for(unsigned int chunkZ = 0; chunkZ < 32; ++chunkZ) {
-				std::cout << chunkX << " " << chunkZ << std::endl;
+				int part = (chunkX*32 + chunkZ);
+				int whole = (32*32);
+				int progress = floor((float(part) / float(whole)) * 100);
+				bars.chunk->set_progress(progress);
+				bars.chunk->set_option(indicators::option::PostfixText{std::format("Scanning region {} {} chunk {} {}",
+					regioncrd_.x, regioncrd_.z, chunkX, chunkZ)});  
+				/*std::cout << std::format("{} {} - {} {} - {}",
+					chunkX, chunkZ, part, whole, progress) << std::endl;*/
 				scanChunk(vec2(chunkX, chunkZ));
 			}
 		}
