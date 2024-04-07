@@ -1,5 +1,4 @@
 #include "scanner.hpp"
-#include <iostream>
 
 namespace emss {
 	void Scanner::openRegionFile(){
@@ -49,17 +48,26 @@ namespace emss {
 		return buffer;
 	}
 
-	void Scanner::writeReport() {
+	void Scanner::writeReport(REPORT_TYPE type) {
 		for (std::string item : lookup_) {
 			std::ofstream outputfile(item + ".txt");
 			if (outputfile.is_open()) {
 				for (FoundBlock *block : foundMap[item]) {
-					outputfile << std::format("{} {} {}", block->getPos()[0], block->getPos()[1], block->getPos()[2]) << std::endl;
-					outputfile << std::format("{} {} : {} {} : {} {}", 
-						block->regioncrd.x, block->regioncrd.y,
-						block->chunkcrd.x, block->chunkcrd.y,
-						block->blockcrd.x, block->blockcrd.y)
-						<< std::endl;
+					if (type == DEBUG) {
+						outputfile << std::format("{} {} {}", block->getPos()[0], block->getPos()[1], block->getPos()[2]) << std::endl;
+						outputfile << std::format("{} {} : {} {} : {} {}", 
+							block->regioncrd.x, block->regioncrd.y,
+							block->chunkcrd.x, block->chunkcrd.y,
+							block->blockcrd.x, block->blockcrd.y)
+							<< std::endl;
+					}
+					
+					if (type == USERFRIENDLY) {
+						outputfile << std::format("/tp @s {} {} {}", 
+							block->getPos()[0], block->getPos()[1], block->getPos()[2]) 
+							<< std::endl;
+					}
+					
 				}
 				outputfile.close();
 			}

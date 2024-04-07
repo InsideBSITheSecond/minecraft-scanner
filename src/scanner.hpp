@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <format>
 #include <unordered_map>
+#include <iostream>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/vec2.hpp"
@@ -10,6 +11,11 @@
 #include "region_file_reader.h"
 
 namespace emss {
+	enum REPORT_TYPE {
+		DEBUG,
+		USERFRIENDLY
+	};
+
 	class FoundBlock : public Block {
 		public:
 			FoundBlock(Block from, glm::vec2 reg, glm::vec2 chun, glm::vec2 blo) 
@@ -36,9 +42,11 @@ namespace emss {
 			void scanRegion();
 			void scanChunk(glm::vec2 crd);
 			void checkBlock(FoundBlock *block);
-			void writeReport();
+
+			void writeReport(REPORT_TYPE type);
 			
 			std::unordered_map<std::string, std::vector<FoundBlock *>> foundMap;
+
 		private:
 			region_file_reader reader_;
 			glm::vec2 regioncrd_;
