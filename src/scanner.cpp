@@ -2,7 +2,7 @@
 
 namespace emss {
 	void Scanner::openRegionFile(){
-		reader_ = region_file_reader(std::format("{}/region/r.{}.{}.mca", worldPath_, regioncrd_.x, regioncrd_.y));
+		reader_ = region_file_reader(std::format("{}/region/r.{}.{}.mca", worldPath_, regioncrd_.x, regioncrd_.z));
 		reader_.read();
 	}
 
@@ -10,21 +10,21 @@ namespace emss {
 		for(unsigned int chunkX = 0; chunkX < 32; ++chunkX) {
 			for(unsigned int chunkZ = 0; chunkZ < 32; ++chunkZ) {
 				std::cout << chunkX << " " << chunkZ << std::endl;
-				scanChunk(glm::vec2(chunkX, chunkZ));
+				scanChunk(vec2(chunkX, chunkZ));
 			}
 		}
 	}
 
-	void Scanner::scanChunk(glm::vec2 crd){
+	void Scanner::scanChunk(vec2 crd){
 		for (unsigned int x = 0; x < 16; ++x) {
 			for (unsigned int z = 0; z < 16; ++z) {
 				if(!reader_.is_filled(x, z))
 					continue;
 
-				std::vector<Block> blocks = reader_.get_blocks_at(crd.x, crd.y, x, z);
+				std::vector<Block> blocks = reader_.get_blocks_at(crd.x, crd.z, x, z);
 				
 				for (Block block : blocks) {
-					checkBlock(new FoundBlock(block, regioncrd_, crd, glm::vec2(x, z)));
+					checkBlock(new FoundBlock(block, regioncrd_, crd, vec2(x, z)));
 				}
 			}
 		}
@@ -56,12 +56,12 @@ namespace emss {
 					if (type == DEBUG) {
 						outputfile << std::format("{} {} {}", block->getPos()[0], block->getPos()[1], block->getPos()[2]) << std::endl;
 						outputfile << std::format("{} {} : {} {} : {} {}", 
-							block->regioncrd.x, block->regioncrd.y,
-							block->chunkcrd.x, block->chunkcrd.y,
-							block->blockcrd.x, block->blockcrd.y)
+							block->regioncrd.x, block->regioncrd.z,
+							block->chunkcrd.x, block->chunkcrd.z,
+							block->blockcrd.x, block->blockcrd.z)
 							<< std::endl;
 					}
-					
+
 					if (type == USERFRIENDLY) {
 						outputfile << std::format("/tp @s {} {} {}", 
 							block->getPos()[0], block->getPos()[1], block->getPos()[2]) 

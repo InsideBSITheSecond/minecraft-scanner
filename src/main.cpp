@@ -36,7 +36,8 @@ int main() {
 		while (ss >> word)
 			lookupTable.push_back(word);
 
-		emss::Scanner *scanner = new emss::Scanner(glm::vec2(0, 0), lookupTable);
+		emss::vec2 crds = {0, 0};
+		emss::Scanner *scanner = new emss::Scanner(crds, lookupTable);
 
 		scanner->scanRegion();
 		scanner->writeReport(emss::USERFRIENDLY);
