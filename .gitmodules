@@ -1,0 +1,3 @@
+[submodule "libs/libanvil"]
+	path = libs/libanvil
+	url = https://github.com/InsideBSITheSecond/libanvil.git
