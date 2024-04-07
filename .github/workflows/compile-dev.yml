@@ -28,7 +28,7 @@ jobs:
         c_compiler: [gcc-13]
         include:
           - os: ubuntu-latest
-            c_compiler: gcc
+            c_compiler: gcc-13
             cpp_compiler: g++
 
     steps:
