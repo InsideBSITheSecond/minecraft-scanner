@@ -6,7 +6,10 @@
 
 #include "region_file_reader.h"
 
+#include <fmt/core.h>
 #include <indicators/progress_bar.hpp>
+
+#include <fmt/core.h>
 
 namespace emss {
 	enum REPORT_TYPE {
