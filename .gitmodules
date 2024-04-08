@@ -4,9 +4,6 @@
 [submodule "libs/indicators"]
 	path = libs/indicators
 	url = https://github.com/p-ranav/indicators.git
-[submodule "fmt"]
-	path = fmt
-	url = https://github.com/fmtlib/fmt.git
 [submodule "libs/fmt"]
 	path = libs/fmt
 	url = https://github.com/fmtlib/fmt.git
