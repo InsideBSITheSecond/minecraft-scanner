@@ -103,8 +103,8 @@ int main() {
 			option::Fill{"■"},
 			option::Lead{"■"},
 			option::Remainder{"-"},
-			option::End{" ]"},
-			option::PostfixText{"Scanning regions x/x"},
+			option::End{"]"},
+			option::PostfixText{"chunk progress"},
 			option::ForegroundColor{Color::cyan},
 			option::FontStyles{std::vector<FontStyle>{FontStyle::bold}}
 		};
@@ -121,8 +121,8 @@ int main() {
 			option::Fill{"■"},
 			option::Lead{"■"},
 			option::Remainder{"-"},
-			option::End{" ]"},
-			option::PostfixText{"Scanning regions x/x"},
+			option::End{"]"},
+			option::PostfixText{"region progress"},
 			option::ForegroundColor{Color::cyan},
 			option::ShowElapsedTime{true},
 			option::ShowRemainingTime{true},
@@ -136,7 +136,7 @@ int main() {
 		for (auto const &file : std::filesystem::directory_iterator{worldpath + "/region"}) {
 			chunkBar.set_progress(0);
 			regionBar.set_option(option::PostfixText{
-				std::to_string(regionBar.current()) + "/" + std::to_string(fileCount)});
+				"region progress " + std::to_string(regionBar.current()) + "/" + std::to_string(fileCount)});
 
 			std::string filename = getFilename(file.path());
 			emss::vec2 coords = getRegionCoord(filename);
