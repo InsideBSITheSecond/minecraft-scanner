@@ -76,9 +76,9 @@ jobs:
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: "release"
+        automatic_release_tag: "dev"
         prerelease: true
-        title: "dev Build"
+        title: "Dev Branch Build"
         files: |
           build/bin/minecraft-scanner
           license
