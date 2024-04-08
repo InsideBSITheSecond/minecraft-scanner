@@ -57,7 +57,7 @@ namespace emss {
 
 	void Scanner::writeReport(REPORT_TYPE type) {
 		for (std::string item : lookup_) {
-			std::ofstream outputfile(item + ".txt");
+			std::ofstream outputfile(item + ".txt", std::ios_base::app);
 			if (outputfile.is_open()) {
 				for (FoundBlock *block : foundMap[item]) {
 					if (type == DEBUG) {

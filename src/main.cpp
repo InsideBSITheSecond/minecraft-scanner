@@ -14,9 +14,9 @@
 
 #include <fmt/core.h>
 
-void askQuestion(std::string question, std::string str) {
+void askQuestion(std::string question, std::string *str) {
 	std::cout << question << std::endl;
-	std::getline(std::cin, str);
+	std::getline(std::cin, *str);
 }
 
 std::string getFilename(const std::string& filepath) {
@@ -77,13 +77,13 @@ int main() {
 
 		std::string worldpath;
 		askQuestion("path to world (or leave blank for " + std::filesystem::current_path().string() + "/world" + ")",
-			worldpath);
+			&worldpath);
 		if (worldpath == "")
 			worldpath = std::filesystem::current_path().string() + "/world";
 		
 		std::string list;
 		askQuestion("Please enter a space-separated list of block names you are looking for in the format modname:blockname",
-			list);
+			&list);
 		std::stringstream ss(list);
 		std::vector<std::string> lookupTable;
 		std::string word;
