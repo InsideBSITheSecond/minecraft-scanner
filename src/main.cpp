@@ -8,6 +8,7 @@
 
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
+#include <indicators/multi_progress.hpp>
 
 #include "scanner.hpp"
 #include "region_file_reader.h"
@@ -108,15 +109,43 @@ int main() {
 			option::FontStyles{std::vector<FontStyle>{FontStyle::bold}}
 		};
 
+		auto dirIter = std::filesystem::directory_iterator(worldpath + "/region");
+		int fileCount = std::count_if(
+			begin(dirIter),
+			end(dirIter),
+			[](auto& entry) {return entry.is_regular_file();});
+
+		ProgressBar regionBar{
+			option::BarWidth{50},
+			option::Start{"["},
+			option::Fill{"■"},
+			option::Lead{"■"},
+			option::Remainder{"-"},
+			option::End{" ]"},
+			option::PostfixText{"Scanning regions x/x"},
+			option::ForegroundColor{Color::cyan},
+			option::ShowElapsedTime{true},
+			option::ShowRemainingTime{true},
+			option::MaxProgress{fileCount},
+			option::FontStyles{std::vector<FontStyle>{FontStyle::bold}}
+		};
+
+		MultiProgress<ProgressBar, 2> bars(chunkBar, regionBar);
+
+		regionBar.set_progress(0);
 		for (auto const &file : std::filesystem::directory_iterator{worldpath + "/region"}) {
 			chunkBar.set_progress(0);
+			regionBar.set_option(option::PostfixText{
+				std::to_string(regionBar.current()) + "/" + std::to_string(fileCount)});
+
 			std::string filename = getFilename(file.path());
 			emss::vec2 coords = getRegionCoord(filename);
-			emss::Scanner *scanner = new emss::Scanner(coords, lookupTable);
-			scanner->worldPath_ = worldpath;
-			scanner->bars.chunk = &chunkBar;
+			emss::Scanner *scanner = new emss::Scanner(coords, lookupTable, worldpath);
+			scanner->bars = &bars;
 			scanner->scanRegion();
 			scanner->writeReport(emss::USERFRIENDLY);
+
+			regionBar.set_progress(regionBar.current() + 1);
 		}
 
 

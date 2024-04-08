@@ -11,10 +11,10 @@ namespace emss {
 			for(unsigned int chunkZ = 0; chunkZ < 32; ++chunkZ) {
 				int part = (chunkX*32 + chunkZ);
 				int whole = (32*32);
-				int progress = floor((float(part) / float(whole)) * 100);
-				bars.chunk->set_progress(progress);
-				bars.chunk->set_option(indicators::option::PostfixText{fmt::format("Scanning region {} {} chunk {} {}",
-					regioncrd_.x, regioncrd_.z, chunkX, chunkZ)});  
+				size_t progress = floor((float(part) / float(whole)) * 100);
+				bars->set_progress<0>(progress);
+				//bars->set_option<0>(indicators::option::PostfixText{fmt::format("Scanning chunk {} {}",
+				//	chunkX, chunkZ)});  
 				/*std::cout << fmt::format("{} {} - {} {} - {}",
 					chunkX, chunkZ, part, whole, progress) << std::endl;*/
 				scanChunk(vec2(chunkX, chunkZ));
