@@ -12,6 +12,8 @@
 #include "scanner.hpp"
 #include "region_file_reader.h"
 
+#include <fmt/core.h>
+
 void askQuestion(std::string question, std::string str) {
 	std::cout << question << std::endl;
 	std::getline(std::cin, str);
