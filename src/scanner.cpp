@@ -2,7 +2,7 @@
 
 namespace emss {
 	void Scanner::openRegionFile(){
-		reader_ = region_file_reader(std::format("{}/region/r.{}.{}.mca", worldPath_, regioncrd_.x, regioncrd_.z));
+		reader_ = region_file_reader(fmt::format("{}/region/r.{}.{}.mca", worldPath_, regioncrd_.x, regioncrd_.z));
 		reader_.read();
 	}
 
@@ -13,9 +13,9 @@ namespace emss {
 				int whole = (32*32);
 				int progress = floor((float(part) / float(whole)) * 100);
 				bars.chunk->set_progress(progress);
-				bars.chunk->set_option(indicators::option::PostfixText{std::format("Scanning region {} {} chunk {} {}",
+				bars.chunk->set_option(indicators::option::PostfixText{fmt::format("Scanning region {} {} chunk {} {}",
 					regioncrd_.x, regioncrd_.z, chunkX, chunkZ)});  
-				/*std::cout << std::format("{} {} - {} {} - {}",
+				/*std::cout << fmt::format("{} {} - {} {} - {}",
 					chunkX, chunkZ, part, whole, progress) << std::endl;*/
 				scanChunk(vec2(chunkX, chunkZ));
 			}
@@ -61,8 +61,8 @@ namespace emss {
 			if (outputfile.is_open()) {
 				for (FoundBlock *block : foundMap[item]) {
 					if (type == DEBUG) {
-						outputfile << std::format("{} {} {}", block->getPos()[0], block->getPos()[1], block->getPos()[2]) << std::endl;
-						outputfile << std::format("{} {} : {} {} : {} {}", 
+						outputfile << fmt::format("{} {} {}", block->getPos()[0], block->getPos()[1], block->getPos()[2]) << std::endl;
+						outputfile << fmt::format("{} {} : {} {} : {} {}", 
 							block->regioncrd.x, block->regioncrd.z,
 							block->chunkcrd.x, block->chunkcrd.z,
 							block->blockcrd.x, block->blockcrd.z)
@@ -70,7 +70,7 @@ namespace emss {
 					}
 
 					if (type == USERFRIENDLY) {
-						outputfile << std::format("/tp @s {} {} {}", 
+						outputfile << fmt::format("/tp @s {} {} {}", 
 							block->getPos()[0], block->getPos()[1], block->getPos()[2]) 
 							<< std::endl;
 					}
