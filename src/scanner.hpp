@@ -8,10 +8,13 @@
 
 #include <fmt/core.h>
 #include <indicators/progress_bar.hpp>
+#include <indicators/multi_progress.hpp>
 
 #include <fmt/core.h>
 
 namespace emss {
+	using namespace indicators;
+	
 	enum REPORT_TYPE {
 		DEBUG,
 		USERFRIENDLY
@@ -23,8 +26,8 @@ namespace emss {
 	};
 
 	struct Progress{
-		indicators::ProgressBar *region;
-		indicators::ProgressBar *chunk;
+		ProgressBar *region;
+		ProgressBar *chunk;
 	};
 
 	class FoundBlock : public Block {
@@ -44,7 +47,7 @@ namespace emss {
 
 	class Scanner {
 		public:
-			Scanner(vec2 regcrd, std::vector<std::string> table) : regioncrd_{regcrd} {
+			Scanner(vec2 regcrd, std::vector<std::string> table, std::string path) : regioncrd_{regcrd}, worldPath_{path} {
 				openRegionFile();
 				lookup_ = table;
 			};
@@ -59,7 +62,7 @@ namespace emss {
 			std::unordered_map<std::string, std::vector<FoundBlock *>> foundMap;
 
 			std::string worldPath_ = std::filesystem::current_path().string() + "/world";
-			Progress bars;
+			MultiProgress<ProgressBar, 2> *bars;
 		private:
 			region_file_reader reader_;
 			vec2 regioncrd_;
