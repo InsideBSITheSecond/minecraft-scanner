@@ -26,6 +26,7 @@ target_link_libraries(${PROJECT_NAME} z)
 
 include_directories(libs/indicators/single_include)
 include_directories(libs/indicators/include)
+include_directories(libs/fmt/include)
 
 # Fake save
 #add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
