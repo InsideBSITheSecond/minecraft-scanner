@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10.2)
 set(PROJECT_NAME minecraft-scanner)
 
 project(${PROJECT_NAME} VERSION 0.1.0 LANGUAGES C CXX)
-add_compile_options(-stdlib=libstdc++)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/obj)
