@@ -152,9 +152,12 @@ int main() {
 
 		std::cout << "end" << std::endl;
 
+		show_console_cursor(true);
+
 	// catch all exception that may occur
 	} catch(std::runtime_error &exc) {
 		std::cerr << exc.what() << std::endl;
+		show_console_cursor(true);
 		return 1;
 	}
 	return 0;
