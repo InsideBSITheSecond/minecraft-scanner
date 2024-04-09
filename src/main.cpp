@@ -133,6 +133,9 @@ int main() {
 		scanner.scanRegion();
 		scanner.writeReport(emss::USERFRIENDLY);*/
 
+		emss::Scanner *scanner = new emss::Scanner(lookupTable, worldpath);
+		scanner->bars = &bars;
+
 		for (auto const &file : std::filesystem::directory_iterator{worldpath + "/region"}) {
 			chunkBar.set_progress(0);
 			regionBar.set_option(option::PostfixText{
@@ -140,15 +143,12 @@ int main() {
 
 			std::string filename = getFilename(file.path());
 			emss::vec2 coords = getRegionCoord(filename);
-			emss::Scanner *scanner = new emss::Scanner(coords, lookupTable, worldpath);
-			scanner->bars = &bars;
+			scanner->openRegionFile(coords);
 			scanner->scanRegion();
-			scanner->writeReport(emss::USERFRIENDLY);
 
 			regionBar.set_progress(regionBar.current() + 1);
-			delete(scanner);
 		}
-
+		scanner->writeReport(emss::USERFRIENDLY);
 
 		std::cout << "end" << std::endl;
 

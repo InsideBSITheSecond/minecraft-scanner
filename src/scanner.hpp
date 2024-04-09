@@ -47,16 +47,15 @@ namespace emss {
 
 	class Scanner {
 		public:
-			Scanner(vec2 regcrd, std::vector<std::string> table, std::string path) : regioncrd_{regcrd}, worldPath_{path} {
-				openRegionFile();
-				lookup_ = table;
+			Scanner(std::vector<std::string> table, std::string path) : worldPath_{path}, lookup_{table} {
+				
 			};
 
 			~Scanner() {
 
 			};
 
-			void openRegionFile();
+			void openRegionFile(vec2 regioncrd);
 			void scanRegion();
 			void scanChunk(vec2 crd);
 			void checkBlock(Block block, vec2 chunkcrd, vec2 blockcrd);
@@ -64,6 +63,7 @@ namespace emss {
 			void writeReport(REPORT_TYPE type);
 			
 			std::unordered_map<std::string, std::vector<FoundBlock *>> foundMap;
+			std::unordered_map<std::string, unsigned long long> foundCount;
 
 			std::string worldPath_ = std::filesystem::current_path().string() + "/world";
 			MultiProgress<ProgressBar, 2> *bars;

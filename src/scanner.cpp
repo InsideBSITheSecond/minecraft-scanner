@@ -1,8 +1,9 @@
 #include "scanner.hpp"
 
 namespace emss {
-	void Scanner::openRegionFile(){
-		reader_ = region_file_reader(fmt::format("{}/region/r.{}.{}.mca", worldPath_, regioncrd_.x, regioncrd_.z));
+	void Scanner::openRegionFile(vec2 regioncrd){
+		regioncrd_ = regioncrd;
+		reader_ = region_file_reader(fmt::format("{}/region/r.{}.{}.mca", worldPath_, regioncrd.x, regioncrd.z));
 		reader_.read();
 	}
 
@@ -38,6 +39,7 @@ namespace emss {
 	}
 
 	void Scanner::checkBlock(Block block, vec2 chunkcrd, vec2 blockcrd) {
+		foundCount[block.getName()]++;
 		for (std::string str : lookup_) {
 			if (block.getName() == str) {
 				foundMap[str].push_back(new FoundBlock(block, regioncrd_, chunkcrd, blockcrd));
@@ -56,10 +58,10 @@ namespace emss {
 	}
 
 	void Scanner::writeReport(REPORT_TYPE type) {
-		for (std::string item : lookup_) {
-			std::ofstream outputfile(item + ".txt", std::ios_base::app);
+		for (auto kv : foundMap) {
+			std::ofstream outputfile(kv.first + ".txt", std::ios_base::app);
 			if (outputfile.is_open()) {
-				for (FoundBlock *block : foundMap[item]) {
+				for (FoundBlock *block : foundMap[kv.first]) {
 					if (type == DEBUG) {
 						outputfile << fmt::format("{} {} {}", block->getPos()[0], block->getPos()[1], block->getPos()[2]) << std::endl;
 						outputfile << fmt::format("{} {} : {} {} : {} {}", 
@@ -78,6 +80,16 @@ namespace emss {
 				}
 				outputfile.close();
 			}
+		}
+
+		std::ofstream outputfile("count.txt", std::ios_base::app);
+		if (outputfile.is_open()) {
+			for (auto kv : foundCount) {
+				outputfile << fmt::format("{} : {}", 
+					kv.first, kv.second)
+					<< std::endl;
+			}
+			outputfile.close();
 		}
 	}
 }
