@@ -31,16 +31,16 @@ namespace emss {
 				std::vector<Block> blocks = reader_.get_blocks_at(crd.x, crd.z, x, z);
 				
 				for (Block block : blocks) {
-					checkBlock(new FoundBlock(block, regioncrd_, crd, vec2(x, z)));
+					checkBlock(block, crd, vec2(x, z));
 				}
 			}
 		}
 	}
 
-	void Scanner::checkBlock(FoundBlock *block) {
+	void Scanner::checkBlock(Block block, vec2 chunkcrd, vec2 blockcrd) {
 		for (std::string str : lookup_) {
-			if (block->getName() == str) {
-				foundMap[str].push_back(block);
+			if (block.getName() == str) {
+				foundMap[str].push_back(new FoundBlock(block, regioncrd_, chunkcrd, blockcrd));
 			}
 		}
 	}
