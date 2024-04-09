@@ -52,10 +52,14 @@ namespace emss {
 				lookup_ = table;
 			};
 
+			~Scanner() {
+
+			};
+
 			void openRegionFile();
 			void scanRegion();
 			void scanChunk(vec2 crd);
-			void checkBlock(FoundBlock *block);
+			void checkBlock(Block block, vec2 chunkcrd, vec2 blockcrd);
 
 			void writeReport(REPORT_TYPE type);
 			

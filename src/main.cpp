@@ -91,12 +91,6 @@ int main() {
 		while (ss >> word)
 			lookupTable.push_back(word);
 
-
-		/*emss::Scanner *scanner = new emss::Scanner(emss::vec2(-1,1), lookupTable);
-		scanner->worldPath_ = worldpath;
-		scanner->scanRegion();
-		scanner->writeReport(emss::USERFRIENDLY);*/
-
 		ProgressBar chunkBar{
 			option::BarWidth{50},
 			option::Start{"["},
@@ -132,7 +126,13 @@ int main() {
 
 		MultiProgress<ProgressBar, 2> bars(chunkBar, regionBar);
 
-		regionBar.set_progress(0);
+		/*regionBar.set_progress(0);
+		emss::Scanner scanner = emss::Scanner(emss::vec2(0,0), lookupTable, worldpath);
+		scanner.worldPath_ = worldpath;
+		scanner.bars = &bars;
+		scanner.scanRegion();
+		scanner.writeReport(emss::USERFRIENDLY);*/
+
 		for (auto const &file : std::filesystem::directory_iterator{worldpath + "/region"}) {
 			chunkBar.set_progress(0);
 			regionBar.set_option(option::PostfixText{
@@ -146,6 +146,7 @@ int main() {
 			scanner->writeReport(emss::USERFRIENDLY);
 
 			regionBar.set_progress(regionBar.current() + 1);
+			delete(scanner);
 		}
 
 
