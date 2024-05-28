@@ -1,35 +1,58 @@
 #include "scanner.hpp"
 
 namespace emss {
-	void Scanner::openRegionFile(vec2 regioncrd){
-		regioncrd_ = regioncrd;
-		reader_ = region_file_reader(fmt::format("{}/region/r.{}.{}.mca", worldPath_, regioncrd.x, regioncrd.z));
-		reader_.read();
+	void Scanner::openRegionFile(){
+		reader_ = new region_file_reader(fmt::format("{}/region/r.{}.{}.mca", worldPath_, regioncrd.x, regioncrd.z));
+		reader_->read();
 	}
 
 	void Scanner::scanRegion(){
-		for(unsigned int chunkX = 0; chunkX < 32; ++chunkX) {
-			for(unsigned int chunkZ = 0; chunkZ < 32; ++chunkZ) {
-				int part = (chunkX*32 + chunkZ);
-				int whole = (32*32);
-				size_t progress = floor((float(part) / float(whole)) * 100);
-				bars->set_progress<0>(progress);
-				//bars->set_option<0>(indicators::option::PostfixText{fmt::format("Scanning chunk {} {}",
-				//	chunkX, chunkZ)});  
-				/*std::cout << fmt::format("{} {} - {} {} - {}",
-					chunkX, chunkZ, part, whole, progress) << std::endl;*/
-				scanChunk(vec2(chunkX, chunkZ));
-			}
+		//std::cout << "region " << regioncrd_.x << " " << regioncrd_.z << " start" << std::endl;
+		index = progress->push_back(bar);
+		openRegionFile();
+		{
+			boost::lock_guard<boost::mutex> lock(mutex);
+			waitingScanners_->erase(
+				std::find(waitingScanners_->begin(),
+				waitingScanners_->end(),
+				this));
+
+			runningScanners_->push_back(this);
 		}
+
+		for(chunkX = 0; chunkX < 32; ++chunkX) {
+			for(chunkZ = 0; chunkZ < 32; ++chunkZ) {
+				scanChunk(vec2(chunkX, chunkZ));
+
+				boost::lock_guard<boost::mutex> lock(mutex);
+				part = (chunkX*32 + chunkZ);
+				whole = (32*32);
+				percent = floor((float(part) / float(whole)) * 100);
+			}
+			//(*progress)[index].set_option(indicators::option::PostfixText{fmt::format("Scanning chunk {}:0->32", chunkX)});
+			//(*progress)[index].set_progress(percent);
+		}
+		{
+			boost::lock_guard<boost::mutex> lock(mutex);
+			runningScanners_->erase(
+				std::find(runningScanners_->begin(),
+				runningScanners_->end(),
+				this));
+
+			finishedScanners_->push_back(this);
+			(*progress)[index].mark_as_completed();
+		}
+		writeReport(USERFRIENDLY);
+		//std::cout << "region " << regioncrd_.x << " " << regioncrd_.z << " stop" << std::endl;
 	}
 
 	void Scanner::scanChunk(vec2 crd){
 		for (unsigned int x = 0; x < 16; ++x) {
 			for (unsigned int z = 0; z < 16; ++z) {
-				if(!reader_.is_filled(x, z))
+				if(!reader_->is_filled(x, z))
 					continue;
 
-				std::vector<Block> blocks = reader_.get_blocks_at(crd.x, crd.z, x, z);
+				std::vector<Block> blocks = reader_->get_blocks_at(crd.x, crd.z, x, z);
 				
 				for (Block block : blocks) {
 					checkBlock(block, crd, vec2(x, z));
@@ -39,10 +62,11 @@ namespace emss {
 	}
 
 	void Scanner::checkBlock(Block block, vec2 chunkcrd, vec2 blockcrd) {
-		foundCount[block.getName()]++;
+		std::string blockName = block.getName();
+		foundCount[blockName]++;
 		for (std::string str : lookup_) {
-			if (block.getName() == str) {
-				foundMap[str].push_back(new FoundBlock(block, regioncrd_, chunkcrd, blockcrd));
+			if (blockName == str) {
+				foundMap[str].push_back(new FoundBlock(block, regioncrd, chunkcrd, blockcrd));
 			}
 		}
 	}

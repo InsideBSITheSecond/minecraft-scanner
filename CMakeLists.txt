@@ -1,9 +1,12 @@
 include(CheckCXXSourceRuns)
 cmake_minimum_required(VERSION 3.10.2)
+
+find_package(Boost REQUIRED)
+
 set(PROJECT_NAME minecraft-scanner)
 
 project(${PROJECT_NAME} VERSION 0.1.0 LANGUAGES C CXX)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -O3")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/obj)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -23,6 +26,10 @@ include_directories(libs/libanvil/include)
 target_link_libraries(${PROJECT_NAME} libanvil)
 target_link_libraries(${PROJECT_NAME} z)
 target_link_libraries(${PROJECT_NAME} fmt::fmt)
+
+target_link_libraries(${PROJECT_NAME} boost_thread)
+target_link_libraries(${PROJECT_NAME} boost_system)
+target_link_libraries(${PROJECT_NAME} boost_chrono)
 
 add_subdirectory(libs/fmt)
 

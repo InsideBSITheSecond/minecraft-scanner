@@ -9,11 +9,13 @@
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
 #include <indicators/multi_progress.hpp>
+#include <indicators/dynamic_progress.hpp>
 
 #include "scanner.hpp"
 #include "region_file_reader.h"
 
 #include <fmt/core.h>
+#include "threads.hpp"
 
 void askQuestion(std::string question, std::string *str) {
 	std::cout << question << std::endl;
@@ -31,10 +33,10 @@ std::string getFilename(const std::string& filepath) {
     return filepath.substr(lastSlashPos + 1);
 }
 
-emss::vec2 getRegionCoord(const std::string& filename) {
+vec2 getRegionCoord(const std::string& filename) {
     std::istringstream iss(filename);
     std::string token;
-	emss::vec2 coords;
+	vec2 coords;
     int count = 0;
 
     while (std::getline(iss, token, '.')) {
@@ -76,11 +78,12 @@ int main() {
 				"minecraft:yellow_wool",
 		};*/
 
-		std::string worldpath;
-		askQuestion("path to world (or leave blank for " + std::filesystem::current_path().string() + "/world" + ")",
+		std::string worldpath = "/home/insidebsi/mmosrvcpy/forge/world/";
+		/*askQuestion("path to world (or leave blank for " + std::filesystem::current_path().string() + "/world" + ")",
 			&worldpath);
 		if (worldpath == "")
-			worldpath = std::filesystem::current_path().string() + "/world";
+			worldpath = std::filesystem::current_path().string() + "/world";*/
+		
 		
 		std::string list;
 		askQuestion("Please enter a space-separated list of block names you are looking for in the format modname:blockname",
@@ -91,25 +94,13 @@ int main() {
 		while (ss >> word)
 			lookupTable.push_back(word);
 
-		ProgressBar chunkBar{
-			option::BarWidth{50},
-			option::Start{"["},
-			option::Fill{"■"},
-			option::Lead{"■"},
-			option::Remainder{"-"},
-			option::End{"]"},
-			option::PostfixText{"chunk progress"},
-			option::ForegroundColor{Color::cyan},
-			option::FontStyles{std::vector<FontStyle>{FontStyle::bold}}
-		};
-
 		auto dirIter = std::filesystem::directory_iterator(worldpath + "/region");
 		int fileCount = std::count_if(
 			begin(dirIter),
 			end(dirIter),
 			[](auto& entry) {return entry.is_regular_file();});
 
-		ProgressBar regionBar{
+		ProgressBar globalProgress{
 			option::BarWidth{50},
 			option::Start{"["},
 			option::Fill{"■"},
@@ -124,7 +115,6 @@ int main() {
 			option::FontStyles{std::vector<FontStyle>{FontStyle::bold}}
 		};
 
-		MultiProgress<ProgressBar, 2> bars(chunkBar, regionBar);
 
 		/*regionBar.set_progress(0);
 		emss::Scanner scanner = emss::Scanner(emss::vec2(0,0), lookupTable, worldpath);
@@ -133,22 +123,52 @@ int main() {
 		scanner.scanRegion();
 		scanner.writeReport(emss::USERFRIENDLY);*/
 
-		emss::Scanner *scanner = new emss::Scanner(lookupTable, worldpath);
-		scanner->bars = &bars;
+		DynamicProgress<ProgressBar> progress{};
+		progress.set_option(option::HideBarWhenComplete{true});
+
+		emss::ThreadPool pool_{18};
+
+		std::vector<emss::Scanner*> waitingScanners;
+		std::vector<emss::Scanner*> runningScanners;
+		std::vector<emss::Scanner*> finishedScanners;
+
+		//scanner->bars = &bars;
+
+		int gpIndex = progress.push_back(globalProgress);
+		progress[gpIndex].set_progress(0);
 
 		for (auto const &file : std::filesystem::directory_iterator{worldpath + "/region"}) {
-			chunkBar.set_progress(0);
+			/*chunkBar.set_progress(0);
 			regionBar.set_option(option::PostfixText{
-				"region progress " + std::to_string(regionBar.current()) + "/" + std::to_string(fileCount)});
+				"region progress " + std::to_string(regionBar.current()) + "/" + std::to_string(fileCount)});*/
 
 			std::string filename = getFilename(file.path());
-			emss::vec2 coords = getRegionCoord(filename);
-			scanner->openRegionFile(coords);
-			scanner->scanRegion();
+			vec2 coords = getRegionCoord(filename);
+			emss::Scanner *scanner = new emss::Scanner(lookupTable, worldpath, &waitingScanners, &runningScanners, &finishedScanners, &progress);
+			scanner->worldPath_ = worldpath;
+			scanner->regioncrd = coords;
+			waitingScanners.push_back(scanner);
+			pool_.pushChunkToThreadPool(scanner);
 
-			regionBar.set_progress(regionBar.current() + 1);
+			//regionBar.set_progress(regionBar.current() + 1);
 		}
-		scanner->writeReport(emss::USERFRIENDLY);
+
+		while (!waitingScanners.empty() || !runningScanners.empty()) {
+			{
+				
+				progress[gpIndex].set_option(indicators::option::PostfixText{fmt::format("Global progress: {}% (W{} R{} F{})",
+					finishedScanners.size() / fileCount * 100, waitingScanners.size(), runningScanners.size(), finishedScanners.size())});
+					
+				progress[gpIndex].set_progress((std::size_t)finishedScanners.size());
+				for (emss::Scanner *scanner : runningScanners) {
+					boost::lock_guard<boost::mutex> lock(scanner->mutex);
+					progress[scanner->index].set_option(indicators::option::PostfixText{fmt::format("{}% region: [{} {}] chunk: [{} {}]", 
+					scanner->percent, scanner->regioncrd.x, scanner->regioncrd.z, scanner->chunkX, scanner->chunkZ)});
+					progress[scanner->index].set_progress(scanner->percent);
+				}
+			}
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(1000));
+		}
 
 		std::cout << "end" << std::endl;
 
